@@ -33,7 +33,7 @@ type PedidoPresenter struct {
 	DataCompra string  `json:"data_compra"`
 }
 
-func processFile(c *fiber.Ctx) error {
+func (f *fiberImplemantation) processFile(c *fiber.Ctx) error {
 	file, err := c.FormFile("text")
 	if err != nil {
 		fmt.Println("Error al obtener el archivo:", err)
@@ -54,6 +54,8 @@ func processFile(c *fiber.Ctx) error {
 	}
 
 	contentString := string(contentBytes)
+
+	fmt.Println(f.ordersUseCase.ProcessFile())
 
 	var usuarios []Usuario
 
@@ -106,8 +108,6 @@ func processFile(c *fiber.Ctx) error {
 		fmt.Println("Error al escanear el archivo:", err)
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
-
-	fmt.Println("UsuariosResponse:", usuarios)
 
 	return c.Status(fiber.StatusOK).JSON(usuarios)
 }
