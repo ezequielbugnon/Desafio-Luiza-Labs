@@ -80,25 +80,23 @@ func (g *GormRepository) InsertFile(data []domain.UserPresenter) {
 		log.Fatal(result.Error)
 	}
 
-	log.Println("Ok")
+	log.Println("Ok dados inseridos")
 }
 
-func (g *GormRepository) GetByDate(startDate, endDate string) ([]domain.UserEntity, error) {
+func (g *GormRepository) GetByDate(startDate, endDate time.Time) ([]domain.UserEntity, error) {
 	db := g.Db.GetDB().(*gorm.DB)
 
-	var userEntities []domain.UserEntity
+	var usersEntities []domain.UserEntity
 
-	result := db.Preload("Orders.Products").Joins("JOIN orders_entities ON orders_entities.usuario_id = usuario_entities.usuario_id").
-		Joins("JOIN produtos_pedidos_entities ON produtos_pedidos_entities.pedido_id = orders_entities.pedido_id").
-		Where("produtos_pedidos_entities.data_compra BETWEEN ? AND ?", startDate, endDate).
-		Find(&userEntities)
-	if result.Error != nil {
-		return nil, result.Error
+	err := db.Preload("Orders.Products", func(db *gorm.DB) *gorm.DB {
+		return db.Where("products_orders_entities.data_compra BETWEEN ? AND ?", startDate, endDate)
+	}).
+		Find(&usersEntities).Error
+
+	if err != nil {
+		log.Println("erro no banco de dados", err)
+		return nil, errors.New("Ocorreu um erro de na base de dados")
 	}
 
-	if result.RowsAffected == 0 {
-		log.Println("Nenhum resultado foi encontrado para os critérios especificados.")
-	}
-
-	return userEntities, nil
+	return usersEntities, nil
 }

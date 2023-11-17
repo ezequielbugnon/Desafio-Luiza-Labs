@@ -3,8 +3,8 @@ package framework
 import (
 	"fmt"
 	"io"
-	"log"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -45,7 +45,6 @@ func (f *fiberImplementation) GetByID(c *fiber.Ctx) error {
 
 	result, err := f.ordersUseCase.RetrieveByID(id)
 	if err != nil {
-		log.Println("ocorreu um erro", err)
 		if strings.Contains(err.Error(), "Nenhum usuário encontrado com ID") {
 			return c.Status(fiber.StatusNotFound).JSON(err.Error())
 		}
@@ -53,4 +52,34 @@ func (f *fiberImplementation) GetByID(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(result)
+}
+
+func (f *fiberImplementation) GetByDate(c *fiber.Ctx) error {
+	start := c.Query("start")
+	end := c.Query("end")
+
+	startTime, err := parseDate(start)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Formato de fecha inválido"})
+	}
+
+	endTime, err := parseDate(end)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Formato de fecha inválido"})
+	}
+
+	result, err := f.ordersUseCase.RetrieveByPurchaseInterval(startTime, endTime)
+	if err != nil {
+
+		if strings.Contains(err.Error(), "Nenhum usuário encontrado") {
+			return c.Status(fiber.StatusNotFound).JSON(err.Error())
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(result)
+}
+
+func parseDate(date string) (time.Time, error) {
+	return time.Parse("2006-01-02", date)
 }

@@ -102,7 +102,6 @@ func (o *OrdersUseCase) ProcessFile(contentString string) ([]domain.UserPresente
 	go o.repository.InsertFile(users)
 
 	return users, nil
-
 }
 
 func (o *OrdersUseCase) RetrieveByID(id string) (domain.UserPresenter, error) {
@@ -136,7 +135,48 @@ func (o *OrdersUseCase) RetrieveByID(id string) (domain.UserPresenter, error) {
 	return userPresenter, nil
 }
 
-func (o *OrdersUseCase) RetrieveByPurchaseInterval(dateStart, dateEnd string) {
+func (o *OrdersUseCase) RetrieveByPurchaseInterval(dateStart, dateEnd time.Time) ([]domain.UserPresenter, error) {
+	var userPresenters []domain.UserPresenter
+	userEntity, err := o.repository.GetByDate(dateStart, dateEnd)
+	if err != nil {
+		return []domain.UserPresenter{}, err
+	}
+
+	for _, user := range userEntity {
+		if !hasNonEmptyProducts(user.Orders) {
+			continue
+		}
+
+		userPresenter := domain.UserPresenter{
+			ID:     user.UserID,
+			Name:   user.Name,
+			Orders: make([]domain.OrdersPresenter, 0),
+		}
+
+		for _, orderEntity := range user.Orders {
+			if len(orderEntity.Products) == 0 {
+				continue
+			}
+			orderPresenter := domain.OrdersPresenter{
+				OrderID:  orderEntity.OrderID,
+				Products: make([]domain.ProductPresenter, 0),
+			}
+
+			for _, productEntity := range orderEntity.Products {
+				productPresenter := domain.ProductPresenter{
+					ProductID: productEntity.ProductID,
+					Value:     productEntity.Value,
+					BuyDate:   productEntity.BuyDate.Format("2006-01-02"),
+				}
+
+				orderPresenter.Products = append(orderPresenter.Products, productPresenter)
+			}
+
+			userPresenter.Orders = append(userPresenter.Orders, orderPresenter)
+		}
+		userPresenters = append(userPresenters, userPresenter)
+	}
+	return userPresenters, nil
 
 }
 
@@ -185,4 +225,13 @@ func parseLine(line string) (OrderParser, error) {
 		Value:     value,
 		BuyDate:   buyDate,
 	}, nil
+}
+
+func hasNonEmptyProducts(orders []domain.OrdersEntity) bool {
+	for _, order := range orders {
+		if len(order.Products) > 0 {
+			return true
+		}
+	}
+	return false
 }

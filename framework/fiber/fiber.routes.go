@@ -27,4 +27,8 @@ func (f *fiberImplementation) Routes() {
 	api.Get("/user/:id", func(c *fiber.Ctx) error {
 		return f.GetByID(c)
 	})
+
+	api.Get("/users/date", func(c *fiber.Ctx) error {
+		return f.GetByDate(c)
+	})
 }
