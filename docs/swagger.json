@@ -174,9 +174,7 @@
       },
       "user": {
         "type": "object",
-        "items": {
-          "type": "object",
-          "properties": {
+        "properties": {
             "id": {
               "type": "integer"
             },
@@ -216,7 +214,6 @@
             }
           }
         }
-      }
     }
   }
 }

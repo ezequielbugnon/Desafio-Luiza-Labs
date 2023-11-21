@@ -7,7 +7,7 @@ import (
 
 	"github.com/ezequielbugnon/Desafio-Luiza-labs/core/orders/application"
 	"github.com/ezequielbugnon/Desafio-Luiza-labs/core/orders/domain"
-	"github.com/ezequielbugnon/Desafio-Luiza-labs/core/orders/infraestructure"
+	"github.com/ezequielbugnon/Desafio-Luiza-labs/core/orders/infrastructure"
 	"github.com/ezequielbugnon/Desafio-Luiza-labs/database"
 	framework "github.com/ezequielbugnon/Desafio-Luiza-labs/framework/fiber"
 	"github.com/gofiber/fiber/v2"
@@ -44,7 +44,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("error ao migrar dados : %v", err)
 	}
-	repository := infraestructure.New(connection)
+	repository := infrastructure.New(connection)
 	ordersUseCase := application.New(repository)
 
 	routes := framework.New(app, ordersUseCase)
