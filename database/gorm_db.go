@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -11,12 +10,7 @@ type GormConnection struct {
 	Database *gorm.DB
 }
 
-func NewPostgres(dns string) (*GormConnection, error) {
-	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{TranslateError: true})
-	if err != nil {
-		return nil, err
-	}
-
+func NewPostgres(db *gorm.DB) (*GormConnection, error) {
 	return &GormConnection{
 		Database: db,
 	}, nil

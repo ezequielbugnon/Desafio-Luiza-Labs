@@ -77,7 +77,7 @@ func (g *GormRepository) InsertFile(data []domain.UserPresenter) {
 
 	result := db.Save(userEntities)
 	if result.Error != nil {
-		log.Fatal(result.Error)
+		log.Println("erro ao salvar dados", result.Error)
 	}
 
 	log.Println("Ok dados inseridos")

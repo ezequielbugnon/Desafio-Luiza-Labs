@@ -1,0 +1,222 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Desafio Luiza Labs",
+    "description": "Essa API tem como objetivo mostrar habilidade do candidato",
+    "termsOfService": "",
+    "contact": {
+      "emai": "bugnonezequiel@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "API de Desafio Luiza Labs, tenta resolver un sistema legado que possui um arquivo de pedidos desnormalizado e que precisam transformá-lo em um arquivo json normalizado. Satisfazendo alguns requisitos"
+    }
+  ],
+  "paths": {
+    "/process-file": {
+      "post": {
+        "sumary": "rota para obter processar o arquivos legados",
+        "description": "Essa rota sera resposavél processar o arquivos legados e salvarlos no banco de dados",
+        "tags": ["process-file"],
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "formData",
+            "description": "Arquivo de .txt formato legado",
+            "required": true,
+            "type": "txt"
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "um erro ocorreu"
+          },
+          "400": {
+            "description": "invalid sent data"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/users"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "sumary": "Esta rota é para obter dados do ID do usuário",
+        "description": "Essa rota sera resposavél de dar dados do ID do usuário",
+        "tags": ["user"],
+        "responses": {
+          "500": {
+            "description": "um erro ocorreu"
+          },
+          "400": {
+            "description": "Formato de data inválido"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "user/date": {
+      "post": {
+        "sumary": "Essa rota obtém dados de um filtro de data",
+        "description": "Essa rota sera resposavél Responsável por buscar dados com filtros de data de início e término",
+        "tags": ["user"],
+        "parameters": [
+            {
+                "name": "start",
+                "in": "query",
+                "description": "Data de início (formato: AAAA-MM-DD)",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "format": "date"
+                }
+            },
+            {
+                "name": "end",
+                "in": "query",
+                "description": "Data de término (formato: AAAA-MM-DD)",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "format": "date"
+                }
+            }
+        ],
+        "responses": {
+          "500": {
+            "description": "an error occurred"
+          },
+          "400": {
+            "description": "invalid sent data"
+          },
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/users"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "users": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "nome": {
+              "type": "string"
+            },
+            "pedidos": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "pedido_id": {
+                    "type": "integer"
+                  },
+                  "produtos": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "produto_id": {
+                          "type": "integer"
+                        },
+                        "valor": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "data_compra": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2021-03-08"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "user": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "nome": {
+              "type": "string"
+            },
+            "pedidos": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "pedido_id": {
+                    "type": "integer"
+                  },
+                  "produtos": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "produto_id": {
+                          "type": "integer"
+                        },
+                        "valor": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "data_compra": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2021-03-08"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

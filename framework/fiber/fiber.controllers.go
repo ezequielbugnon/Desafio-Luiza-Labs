@@ -60,12 +60,12 @@ func (f *fiberImplementation) GetByDate(c *fiber.Ctx) error {
 
 	startTime, err := parseDate(start)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Formato de fecha inválido"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Formato de data inválido"})
 	}
 
 	endTime, err := parseDate(end)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Formato de fecha inválido"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Formato de data inválido"})
 	}
 
 	result, err := f.ordersUseCase.RetrieveByPurchaseInterval(startTime, endTime)
